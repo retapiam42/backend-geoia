@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('denuncias', function (Blueprint $table) {
             $table->id('denuncias_id');
-            $table->unsignedBigInteger('usuario_id');
+            $table->unsignedBigInteger('usuario_id')->nullable();
             $table->string('titulo');
             $table->text('descripcion');
             $table->boolean('anonima')->default(false);
             $table->timestamps();
             
-            $table->foreign('usuario_id')->references('usuarios_id')->on('usuarios')->onDelete('cascade');
+            $table->foreign('usuario_id')->references('usuarios_id')->on('usuarios')->onDelete('set null');
         });
     }
 

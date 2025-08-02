@@ -25,13 +25,21 @@ Route::apiResource('usuarios', UsuarioController::class);
 Route::post('/registro', [UsuarioController::class, 'Registro']);
 Route::get('/usuario', [UsuarioController::class, 'usuario'])->name('usuario');
 
-// Denuncias API routes
+// Denuncias API routes - Rutas específicas primero
+Route::get('/denuncias/estado/{status}', [DenunciaController::class, 'getByStatus']);
+Route::get('/denuncias/anónimas', [DenunciaController::class, 'getAnonymous']);
+Route::get('/denuncias/no-anónimas', [DenunciaController::class, 'getNonAnonymous']);
 Route::apiResource('denuncias', DenunciaController::class);
 
 // Proyectos API routes
 Route::apiResource('proyectos', ProyectoController::class);
 
-// Donaciones API routes
+// Donaciones API routes - Rutas específicas primero
+Route::post('/donaciones/{id}/confirmar-pago', [DonacionController::class, 'confirmarPago']);
+Route::get('/donaciones/estado-pago/{status}', [DonacionController::class, 'getByPaymentStatus']);
+Route::get('/donaciones/anónimas', [DonacionController::class, 'getAnonymous']);
+Route::get('/donaciones/no-anónimas', [DonacionController::class, 'getNonAnonymous']);
+Route::get('/donaciones/proyecto/{projectId}', [DonacionController::class, 'getByProject']);
 Route::apiResource('donaciones', DonacionController::class);
 
 // Movimientos API routes
