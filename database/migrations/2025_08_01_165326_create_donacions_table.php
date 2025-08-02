@@ -11,14 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('donaciones', function (Blueprint $table) {
-            $table->id('donacion_id');
-            $table->unsignedBigInteger('usuario_id');
+        Schema::create('donacions', function (Blueprint $table) {
+            $table->id('donacions_id');
+            $table->unsignedBigInteger('usuario_id')->nullable();
+            $table->unsignedBigInteger('proyecto_id')->nullable();
             $table->decimal('monto', 10, 2);
-            $table->boolean('anonima');
+            $table->boolean('anonima')->default(false);
             $table->string('metodo_pago');
+            $table->string('telefono')->nullable();
+            $table->string('correo')->nullable();
+            $table->string('documento_path')->nullable();
             $table->timestamps();
-            //$table->foreign('usuario_id')->references('usuarios_id')->on('usuarios')->onDelete('set null');
+            
+            $table->foreign('usuario_id')->references('usuarios_id')->on('usuarios')->onDelete('set null');
+            $table->foreign('proyecto_id')->references('proyectos_id')->on('proyectos')->onDelete('set null');
         });
     }
 
@@ -27,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('donaciones');
+        Schema::dropIfExists('donacions');
     }
 };

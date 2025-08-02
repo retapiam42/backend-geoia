@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('descripcion');
             $table->decimal('meta_fondos', 10, 2);
             $table->decimal('fondos_actuales', 10, 2);
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
 

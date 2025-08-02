@@ -12,7 +12,11 @@ class MovimientoController extends Controller
      */
     public function index()
     {
-        //
+        $movimientos = Movimiento::with('donacion')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $movimientos
+        ]);
     }
 
     /**
@@ -28,15 +32,40 @@ class MovimientoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'donacion_id' => 'required|integer|exists:donacions,donacions_id',
+            'tipo' => 'required|string|in:ingreso,egreso',
+            'monto' => 'required|numeric|min:0',
+            'descripcion' => 'required|string',
+        ]);
+
+        $movimiento = Movimiento::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Movimiento creado exitosamente',
+            'data' => $movimiento
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Movimiento $movimiento)
+    public function show($id)
     {
-        //
+        $movimiento = Movimiento::with('donacion')->find($id);
+
+        if (!$movimiento) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Movimiento no encontrado'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $movimiento
+        ]);
     }
 
     /**
@@ -50,16 +79,52 @@ class MovimientoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Movimiento $movimiento)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'donacion_id' => 'sometimes|integer|exists:donacions,donacions_id',
+            'tipo' => 'sometimes|string|in:ingreso,egreso',
+            'monto' => 'sometimes|numeric|min:0',
+            'descripcion' => 'sometimes|string',
+        ]);
+
+        $movimiento = Movimiento::find($id);
+
+        if (!$movimiento) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Movimiento no encontrado'
+            ], 404);
+        }
+
+        $movimiento->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Movimiento actualizado exitosamente',
+            'data' => $movimiento
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Movimiento $movimiento)
+    public function destroy($id)
     {
-        //
+        $movimiento = Movimiento::find($id);
+
+        if (!$movimiento) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Movimiento no encontrado'
+            ], 404);
+        }
+
+        $movimiento->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Movimiento eliminado exitosamente'
+        ]);
     }
 }

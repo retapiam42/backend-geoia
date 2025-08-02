@@ -13,7 +13,10 @@ class UsuarioController extends Controller
     public function index()
     {
         $usuarios = Usuario::all();
-        return response()->json($usuarios);
+        return response()->json([
+            'success' => true,
+            'data' => $usuarios
+        ]);
     }
 
     /**
@@ -21,7 +24,17 @@ class UsuarioController extends Controller
      */
     public function create()
     {
-        // Not used in API
+        return response()->json([
+            'success' => true,
+            'message' => 'Endpoint para crear usuario - Use POST /api/usuarios',
+            'example' => [
+                'nombre' => 'Usuario Ejemplo',
+                'email' => 'usuario@example.com',
+                'tel' => '123456789',
+                'password' => '123456',
+                'anonimo' => false
+            ]
+        ]);
     }
 
     /**
@@ -32,6 +45,7 @@ class UsuarioController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|unique:usuarios,email',
+            'tel' => 'nullable|string|max:20',
             'password' => 'required|string|min:6',
             'anonimo' => 'required|boolean',
         ]);
@@ -39,11 +53,16 @@ class UsuarioController extends Controller
         $usuario = Usuario::create([
             'nombre' => $validated['nombre'],
             'email' => $validated['email'],
+            'tel' => $validated['tel'] ?? null,
             'password' => bcrypt($validated['password']),
             'anonimo' => $validated['anonimo'],
         ]);
 
-        return response()->json($usuario, 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario creado exitosamente',
+            'data' => $usuario
+        ], 201);
     }
 
     /**
@@ -51,7 +70,10 @@ class UsuarioController extends Controller
      */
     public function show(Usuario $usuario)
     {
-        return response()->json($usuario);
+        return response()->json([
+            'success' => true,
+            'data' => $usuario
+        ]);
     }
 
     /**
@@ -59,7 +81,11 @@ class UsuarioController extends Controller
      */
     public function edit(Usuario $usuario)
     {
-        // Not used in API
+        return response()->json([
+            'success' => true,
+            'message' => 'Endpoint para editar usuario - Use PUT /api/usuarios/' . $usuario->usuarios_id,
+            'data' => $usuario
+        ]);
     }
 
     /**
@@ -70,6 +96,7 @@ class UsuarioController extends Controller
         $validated = $request->validate([
             'nombre' => 'sometimes|required|string|max:255',
             'email' => 'sometimes|required|email|unique:usuarios,email,' . $usuario->usuarios_id . ',usuarios_id',
+            'tel' => 'nullable|string|max:20',
             'password' => 'sometimes|required|string|min:6',
             'anonimo' => 'sometimes|required|boolean',
         ]);
@@ -80,6 +107,9 @@ class UsuarioController extends Controller
         if (isset($validated['email'])) {
             $usuario->email = $validated['email'];
         }
+        if (isset($validated['tel'])) {
+            $usuario->tel = $validated['tel'];
+        }
         if (isset($validated['password'])) {
             $usuario->password = bcrypt($validated['password']);
         }
@@ -89,7 +119,11 @@ class UsuarioController extends Controller
 
         $usuario->save();
 
-        return response()->json($usuario);
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario actualizado exitosamente',
+            'data' => $usuario
+        ]);
     }
 
     /**
@@ -98,6 +132,30 @@ class UsuarioController extends Controller
     public function destroy(Usuario $usuario)
     {
         $usuario->delete();
-        return response()->json(null, 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Usuario eliminado exitosamente'
+        ]);
+    }
+
+    /**
+     * Get current user information
+     */
+    public function usuario(Request $request)
+    {
+        // This would typically get the authenticated user
+        // For now, return a placeholder response
+        return response()->json([
+            'success' => true,
+            'message' => 'Endpoint para obtener información del usuario actual'
+        ]);
+    }
+
+    /**
+     * User registration
+     */
+    public function Registro(Request $request)
+    {
+        return $this->store($request);
     }
 }

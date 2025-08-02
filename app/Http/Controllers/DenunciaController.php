@@ -12,15 +12,11 @@ class DenunciaController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $denuncias = Denuncia::all();
+        return response()->json([
+            'success' => true,
+            'data' => $denuncias
+        ]);
     }
 
     /**
@@ -28,38 +24,96 @@ class DenunciaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the request data
+        $validatedData = $request->validate([
+            'usuario_id' => 'required|integer|exists:usuarios,id',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'anonima' => 'required|boolean'
+        ]);
+
+        // Create a new denuncia
+        $denuncia = Denuncia::create($validatedData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Denuncia creada exitosamente',
+            'data' => $denuncia
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Denuncia $denuncia)
+    public function show($id)
     {
-        //
-    }
+        $denuncia = Denuncia::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Denuncia $denuncia)
-    {
-        //
+        if (!$denuncia) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Denuncia no encontrada'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $denuncia
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Denuncia $denuncia)
+    public function update(Request $request, $id)
     {
-        //
+        // Validate the request data
+        $validatedData = $request->validate([
+            'usuario_id' => 'sometimes|integer|exists:usuarios,id',
+            'titulo' => 'sometimes|string|max:255',
+            'descripcion' => 'sometimes|string',
+            'anonima' => 'sometimes|boolean'
+        ]);
+
+        // Find the denuncia
+        $denuncia = Denuncia::find($id);
+
+        if (!$denuncia) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Denuncia no encontrada'
+            ], 404);
+        }
+
+        // Update the denuncia
+        $denuncia->update($validatedData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Denuncia actualizada exitosamente',
+            'data' => $denuncia
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Denuncia $denuncia)
+    public function destroy($id)
     {
-        //
+        $denuncia = Denuncia::find($id);
+
+        if (!$denuncia) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Denuncia no encontrada'
+            ], 404);
+        }
+
+        $denuncia->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Denuncia eliminada exitosamente'
+        ]);
     }
 }

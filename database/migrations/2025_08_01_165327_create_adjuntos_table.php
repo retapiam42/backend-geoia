@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('archivo'); // path al archivo
             $table->string('tipo'); // imagen, pdf, etc.
             $table->timestamps();
-            //$table->foreign('denuncia_id')->references('id')->on('denuncias')->onDelete('cascade');
+            
+            $table->foreign('denuncia_id')->references('denuncias_id')->on('denuncias')->onDelete('cascade');
         });
     }
 

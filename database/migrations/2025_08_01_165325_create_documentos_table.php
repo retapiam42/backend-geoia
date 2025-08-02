@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('documentos', function (Blueprint $table) {
-            $table->id();
+            $table->id('documentos_id');
             $table->string('titulo');
             $table->text('descripcion');
             $table->string('ruta_archivo'); // path al archivo

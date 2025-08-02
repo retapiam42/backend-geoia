@@ -18,7 +18,8 @@ return new class extends Migration
             $table->decimal('monto', 10, 2);
             $table->text('descripcion');
             $table->timestamps();
-            //$table->foreign('donacion_id')->references('id')->on('donaciones')->onDelete('set null');
+            
+            $table->foreign('donacion_id')->references('donacions_id')->on('donacions')->onDelete('cascade');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('movimientos');
     }
 };

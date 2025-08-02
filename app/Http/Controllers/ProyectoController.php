@@ -12,7 +12,11 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-        //
+        $proyectos = Proyecto::with('donaciones')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $proyectos
+        ]);
     }
 
     /**
@@ -28,15 +32,41 @@ class ProyectoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'meta_fondos' => 'required|numeric|min:0',
+            'fondos_actuales' => 'required|numeric|min:0',
+            'activo' => 'sometimes|boolean',
+        ]);
+
+        $proyecto = Proyecto::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Proyecto creado exitosamente',
+            'data' => $proyecto
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Proyecto $proyecto)
+    public function show($id)
     {
-        //
+        $proyecto = Proyecto::with('donaciones')->find($id);
+
+        if (!$proyecto) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyecto no encontrado'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $proyecto
+        ]);
     }
 
     /**
@@ -50,16 +80,53 @@ class ProyectoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Proyecto $proyecto)
+    public function update(Request $request, $id)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'sometimes|string|max:255',
+            'descripcion' => 'sometimes|string',
+            'meta_fondos' => 'sometimes|numeric|min:0',
+            'fondos_actuales' => 'sometimes|numeric|min:0',
+            'activo' => 'sometimes|boolean',
+        ]);
+
+        $proyecto = Proyecto::find($id);
+
+        if (!$proyecto) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyecto no encontrado'
+            ], 404);
+        }
+
+        $proyecto->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Proyecto actualizado exitosamente',
+            'data' => $proyecto
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Proyecto $proyecto)
+    public function destroy($id)
     {
-        //
+        $proyecto = Proyecto::find($id);
+
+        if (!$proyecto) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyecto no encontrado'
+            ], 404);
+        }
+
+        $proyecto->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Proyecto eliminado exitosamente'
+        ]);
     }
 }
